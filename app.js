@@ -19,11 +19,12 @@ dotenv.config();
 
 // database connection
 mongoose
-  .connect(process.env.MONGO_CONNECTION_STRING, {
+  .connect(`mongodb://localhost/chat`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("databse connection successful"));
+  .then(() => console.log("database connection successful!"))
+  .catch((err) => console.log(err));
 
 //request parser
 app.use(express.json());
