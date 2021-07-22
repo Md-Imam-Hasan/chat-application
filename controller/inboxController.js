@@ -138,45 +138,45 @@ async function sendMessage(req, res, next) {
         req.files.forEach((file) => {
           attachments.push(file.filename);
         });
+      }
 
-        const newMessage = new Message({
-          text: req.body.message,
-          attachment: attachments,
+      const newMessage = new Message({
+        text: req.body.message,
+        attachment: attachments,
+        sender: {
+          id: req.user.userid,
+          name: req.user.username,
+          avatar: req.user.avatar || null,
+        },
+        receiver: {
+          id: req.body.receiverId,
+          name: req.body.receiverName,
+          avatar: req.body.avatar || null,
+        },
+        conversation_id: req.body.conversationId,
+      });
+
+      const result = await newMessage.save();
+
+      // emit socket event
+      global.io.emit("new_message", {
+        message: {
+          conversation_id: req.body.conversationId,
           sender: {
             id: req.user.userid,
             name: req.user.username,
             avatar: req.user.avatar || null,
           },
-          receiver: {
-            id: req.body.receiverid,
-            name: req.body.receiverName,
-            avatar: req.body.avatar || null,
-          },
-          conversation_id: req.body.conversationId,
-        });
+          message: req.body.message,
+          attachment: attachments,
+          date_time: result.date_time,
+        },
+      });
 
-        const result = await newMessage.save();
-
-        // emit socket event
-        global.io.emit("new_message", {
-          message: {
-            conversation_id: req.body.conversationId,
-            sender: {
-              id: req.user.userid,
-              name: req.user.username,
-              avatar: req.user.avatar || null,
-            },
-            message: req.body.message,
-            attachment: attachments,
-            date_time: result.date_time,
-          },
-        });
-
-        res.status(200).json({
-          message: "Successful!",
-          data: result,
-        });
-      }
+      res.status(200).json({
+        message: "Successful!",
+        data: result,
+      });
     } catch (err) {
       res.status(500).json({
         errors: {
@@ -194,6 +194,7 @@ async function sendMessage(req, res, next) {
     });
   }
 }
+
 module.exports = {
   getInbox,
   searchUser,

@@ -196,7 +196,6 @@
         formData.append('receiverName', participant.name);
         formData.append('avatar', participant.avatar || '');
         formData.append('conversationId', current_conversation_id);
-        console.log(formData)
 
         // send the request to server
         let response = await fetch("/inbox/message", {
