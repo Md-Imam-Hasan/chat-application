@@ -609,6 +609,7 @@ input[type="submit"]:active {
 
 #branding img {
   width: 100px;
+  border-radius: 50%;
 }
 
 /* Form Section */
